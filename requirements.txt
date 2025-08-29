@@ -1,6 +1,3 @@
 streamlit
 psycopg2-binary
 pandas
-altair
-Image
-fetch_dashboard_data
