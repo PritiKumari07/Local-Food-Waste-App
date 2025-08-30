@@ -1,16 +1,10 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
+from db import get_connection
 
 st.title("📬 Contact Us")
 
-def get_connection():
-    return psycopg2.connect(
-        host="localhost",
-        database="food_data",
-        user="postgres",
-        password="0719"
-    )
 
 # --- Filters ---
 st.sidebar.header("Filter Providers")
