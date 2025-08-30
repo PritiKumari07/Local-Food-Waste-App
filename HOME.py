@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import psycopg2
-from db import fetch_dashboard_data
+from db import run_query
 import os
 
 # Page Config

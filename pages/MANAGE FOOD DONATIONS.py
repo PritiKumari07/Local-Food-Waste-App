@@ -1,15 +1,7 @@
 import streamlit as st
 import psycopg2
 import pandas as pd
-
-# Database connection helper
-def get_connection():
-    return psycopg2.connect(
-        host="localhost",
-        database="food_data",
-        user="postgres",
-        password="0719"
-    )
+from db import get_connection
 
 st.title("🍽️ Manage Food Donations")
 
