@@ -4,10 +4,11 @@ import pandas as pd
 
 
 DB_HOST = "ep-proud-cell-a10f5zkf-pooler.ap-southeast-1.aws.neon.tech"
-DB_NAME = "neondb?sslmode=require&channel_binding=require"
+DB_NAME = "neondb"
 DB_USER = "neondb_owner"        
 DB_PASSWORD = "npg_ILpvZxJ80eKQ"  
-DB_PORT = ""                 
+DB_PORT = "5432"                 
+
 
 def get_connection():
     """Create a connection to the hosted PostgreSQL database."""
@@ -17,7 +18,8 @@ def get_connection():
             database=DB_NAME,
             user=DB_USER,
             password=DB_PASSWORD,
-            port=DB_PORT
+            port=DB_PORT,
+            sslmode="require"
         )
         return conn
     except Exception as e:
