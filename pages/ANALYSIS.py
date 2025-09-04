@@ -1,17 +1,15 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import altair as alt
 from db import get_connection
 
 st.title("📊 Food Donation Analysis Dashboard")
 
-# ---------------- CONNECT TO DB ----------------
-conn = get_connection()
+engine = get_connection()
 
-if conn:
-    try:
-        # --- 1. Total providers and receivers ---
+try:
+    with engine.connect() as conn:
+        # 1. Total providers and receivers
         totals_query = """
         SELECT
             (SELECT COUNT(*) FROM providers) AS total_providers,
@@ -22,7 +20,7 @@ if conn:
         st.metric("Providers", int(totals.total_providers[0]))
         st.metric("Receivers", int(totals.total_receivers[0]))
 
-        # --- 2. Total food listings and quantity ---
+        # 2. Total food listings and quantity
         food_totals_query = """
         SELECT COUNT(*) AS total_listings, SUM(quantity) AS total_quantity
         FROM food_listings
@@ -32,7 +30,7 @@ if conn:
         st.metric("Total Listings", int(food_totals.total_listings[0]))
         st.metric("Total Quantity", int(food_totals.total_quantity[0] or 0))
 
-        # --- 3. Food donated by type (Bar chart) ---
+        # 3. Food donated by type (Bar chart)
         food_type_query = """
         SELECT food_type, SUM(quantity) AS total_quantity
         FROM food_listings
@@ -51,7 +49,7 @@ if conn:
         else:
             st.info("No food type data available.")
 
-        # --- 4. Top 5 cities by donations (Bar chart) ---
+        # 4. Top 5 cities by donations (Bar chart)
         city_query = """
         SELECT p.city, COUNT(f.food_id) AS total_donations
         FROM food_listings f
@@ -72,7 +70,7 @@ if conn:
         else:
             st.info("No city data available.")
 
-        # --- 5. Donations trend over time (Line chart) ---
+        # 5. Donations trend over time (Line chart)
         trend_query = """
         SELECT DATE(expiry_date) AS date, SUM(quantity) AS total_quantity
         FROM food_listings
@@ -91,7 +89,7 @@ if conn:
         else:
             st.info("No donation trend data available.")
 
-        # --- 6. Top 5 donors (Bar chart) ---
+        # 6. Top 5 donors (Bar chart)
         top_donors_query = """
         SELECT p.name AS provider_name, SUM(f.quantity) AS total_quantity
         FROM food_listings f
@@ -112,7 +110,7 @@ if conn:
         else:
             st.info("No donor data available.")
 
-        # --- 7. Top 5 receivers (Bar chart) ---
+        # 7. Top 5 receivers (Bar chart)
         top_receivers_query = """
         SELECT r.name AS receiver_name, COUNT(c.claim_id) AS claims_made
         FROM claims c
@@ -133,7 +131,7 @@ if conn:
         else:
             st.info("No receiver data available.")
 
-        # --- 8. Food type percentage (Pie chart using Altair) ---
+        # 8. Food type percentage (Pie chart)
         st.subheader("Food Type Distribution")
         if not food_type_data.empty:
             food_type_data['percentage'] = (
@@ -147,8 +145,5 @@ if conn:
             st.altair_chart(pie_chart, use_container_width=True)
         else:
             st.info("No food data available for pie chart.")
-
-    finally:
-        conn.close()
-else:
-    st.error("❌ Could not connect to the database")
+except Exception as e:
+    st.error(f"❌ Could not connect to the database: {e}")

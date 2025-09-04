@@ -1,5 +1,4 @@
 import streamlit as st
-import psycopg2
 import pandas as pd
 from db import get_connection
 
@@ -7,6 +6,8 @@ st.title("🍽️ Manage Food Donations")
 
 menu = ["Add Donation", "View Donations", "Update Donation", "Delete Donation"]
 choice = st.sidebar.selectbox("Select Operation", menu)
+
+engine = get_connection()
 
 # ---------------- ADD DONATION ----------------
 if choice == "Add Donation":
@@ -22,31 +23,32 @@ if choice == "Add Donation":
     meal_type = st.text_input("Meal Type")
 
     if st.button("Add Donation"):
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute("""
-            INSERT INTO food_listings (food_id,food_name,quantity,expiry_date,provider_id, provider_type,location,food_type,meal_type)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (food_id, food_name,quantity, expiry_date, provider_id, provider_type, location,food_type,meal_type))
-        conn.commit()
-        cur.close()
-        conn.close()
+        with engine.begin() as conn:
+            conn.execute(
+                f"""INSERT INTO food_listings (food_id,food_name,quantity,expiry_date,provider_id, provider_type,location,food_type,meal_type)
+                    VALUES (:food_id, :food_name, :quantity, :expiry_date, :provider_id, :provider_type, :location, :food_type, :meal_type)
+                """,
+                {
+                    "food_id": food_id, "food_name": food_name,
+                    "quantity": quantity, "expiry_date": expiry_date,
+                    "provider_id": provider_id, "provider_type": provider_type,
+                    "location": location, "food_type": food_type, "meal_type": meal_type
+                }
+            )
         st.success("✅ Donation added successfully!")
 
 # ---------------- VIEW DONATIONS ----------------
 elif choice == "View Donations":
     st.subheader("📋 All Donations")
-    conn = get_connection()
-    df = pd.read_sql("SELECT * FROM food_listings ORDER BY food_id ASC", conn)
-    st.dataframe(df)
-    conn.close()
+    with engine.connect() as conn:
+        df = pd.read_sql("SELECT * FROM food_listings ORDER BY food_id ASC", conn)
+        st.dataframe(df)
 
 # ---------------- UPDATE DONATION ----------------
 elif choice == "Update Donation":
     st.subheader("✏️ Update an Existing Donation")
-    conn = get_connection()
-    df = pd.read_sql("SELECT * FROM food_listings", conn)
-    conn.close()
+    with engine.connect() as conn:
+        df = pd.read_sql("SELECT * FROM food_listings", conn)
 
     donation_ids = df["food_id"].tolist()
     selected_id = st.selectbox("Select Donation ID", donation_ids)
@@ -59,33 +61,29 @@ elif choice == "Update Donation":
     new_expiry_date = st.date_input("Expiry Date", selected_row["expiry_date"])
 
     if st.button("Update Donation"):
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute("""
-            UPDATE food_listings
-            SET food_name=%s, food_type=%s, quantity=%s, expiry_date=%s
-            WHERE food_id=%s
-        """, (new_food_name, new_food_type, new_quantity, new_expiry_date, selected_id))
-        conn.commit()
-        cur.close()
-        conn.close()
+        with engine.begin() as conn:
+            conn.execute(
+                "UPDATE food_listings SET food_name=:food_name, food_type=:food_type, quantity=:quantity, expiry_date=:expiry_date WHERE food_id=:food_id",
+                {
+                    "food_name": new_food_name, "food_type": new_food_type,
+                    "quantity": new_quantity, "expiry_date": new_expiry_date,
+                    "food_id": selected_id,
+                }
+            )
         st.success(f"✅ Donation ID {selected_id} updated successfully!")
 
 # ---------------- DELETE DONATION ----------------
 elif choice == "Delete Donation":
     st.subheader("🗑️ Delete a Donation")
-    conn = get_connection()
-    df = pd.read_sql("SELECT * FROM food_listings", conn)
-    conn.close()
+    with engine.connect() as conn:
+        df = pd.read_sql("SELECT * FROM food_listings", conn)
 
     donation_ids = df["food_id"].tolist()
     selected_id = st.selectbox("Select Donation ID to Delete", donation_ids)
 
     if st.button("Delete Donation"):
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM food_listings WHERE food_id=%s", (selected_id,))
-        conn.commit()
-        cur.close()
-        conn.close()
+        with engine.begin() as conn:
+            conn.execute("DELETE FROM food_listings WHERE food_id=:food_id", {"food_id": selected_id})
         st.success(f"✅ Donation ID {selected_id} deleted successfully!")
+
+    st.dataframe(df)

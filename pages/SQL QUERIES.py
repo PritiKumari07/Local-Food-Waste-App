@@ -4,9 +4,8 @@ from db import get_connection
 
 st.title("📊 SQL Queries and Outputs")
 
-# --- SQL Queries Dictionary ---
 queries = {
-    "How many food providers and receivers are there in each city?": """
+        "How many food providers and receivers are there in each city?": """
         SELECT
             city,
             SUM(provider_count) AS provider_count,
@@ -150,16 +149,14 @@ queries = {
         GROUP BY weekday
         ORDER BY weekday;
     """
+
 }
 
-# --- UI: Select a Query ---
 choice = st.selectbox("🔍 Select a query to run:", list(queries.keys()))
 
-# --- Run Query ---
 if st.button("Run Query"):
-    conn = get_connection()
-    df = pd.read_sql(queries[choice], conn)
-    conn.close()
-
-    st.write("### Results")
-    st.dataframe(df)
+    engine = get_connection()
+    with engine.connect() as conn:
+        df = pd.read_sql(queries[choice], conn)
+        st.write("### Results")
+        st.dataframe(df)
