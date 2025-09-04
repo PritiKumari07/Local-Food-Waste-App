@@ -1,16 +1,17 @@
 import streamlit as st
 from PIL import Image
-import psycopg2
+from pathlib import Path
 from db import fetch_dashboard_data
-import os
+
 
 # Page Config
 
-st.set_page_config(page_title="Local Food Waste Management System", layout="wide")
-
-image_path = os.path.join("assets", "cover.jpeg")
-cover_image = Image.open(image_path)
-st.image(cover_image, use_container_width=True)
+image_path = Path("assets/cover.jpeg")
+if image_path.exists():
+    cover_image = Image.open(image_path)
+    st.image(cover_image, use_container_width=True)
+else:
+    st.warning("⚠️ Cover image not found. Please check 'assets/cover.jpeg' path.")
 
     ## 🌱 **Sustainability**:
 

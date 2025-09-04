@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
-import psycopg2
 from db import get_connection
 
 st.title("📬 Contact Us")
-
 
 # --- Filters ---
 st.sidebar.header("Filter Providers")
