@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
-from db import get_connection
+from db import get_engine
 
 st.title("📊 SQL Queries and Outputs")
 
 queries = {
-        "How many food providers and receivers are there in each city?": """
+    "How many food providers and receivers are there in each city?": """
         SELECT
             city,
             SUM(provider_count) AS provider_count,
@@ -32,7 +32,7 @@ queries = {
     "What is the contact information of food providers in a specific city?": """
         SELECT name, contact, address, city
         FROM providers
-        WHERE city = 'Valentineside';
+        WHERE city ILIKE :city_name;
     """,
 
     "Which receivers have claimed the most food?": """
@@ -102,10 +102,10 @@ queries = {
     """,
 
     "Which meal type is claimed the most?": """
-        SELECT f.food_type, COUNT(c.claim_id) AS claims_count
+        SELECT f.meal_type, COUNT(c.claim_id) AS claims_count
         FROM claims c
         JOIN food_listings f ON c.food_id = f.food_id
-        GROUP BY f.food_type
+        GROUP BY f.meal_type
         ORDER BY claims_count DESC
         LIMIT 1;
     """,
@@ -149,14 +149,22 @@ queries = {
         GROUP BY weekday
         ORDER BY weekday;
     """
-
 }
 
 choice = st.selectbox("🔍 Select a query to run:", list(queries.keys()))
 
 if st.button("Run Query"):
-    engine = get_connection()
+    engine = get_engine()
+
     with engine.connect() as conn:
-        df = pd.read_sql(queries[choice], conn)
-        st.write("### Results")
+        if choice == "What is the contact information of food providers in a specific city?":
+            city_name = st.text_input("Enter city name (default: Valentineside)", "Valentineside")
+            df = pd.read_sql(queries[choice], conn, params={"city_name": city_name})
+        else:
+            df = pd.read_sql(queries[choice], conn)
+
+    st.write("### Results")
+    if df.empty:
+        st.info("No results found.")
+    else:
         st.dataframe(df)

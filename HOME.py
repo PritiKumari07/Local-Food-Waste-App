@@ -1,96 +1,30 @@
 import streamlit as st
 from PIL import Image
 from pathlib import Path
-from db import fetch_dashboard_data
+from db import fetch_dashboard_data, init_db
 
+# Initialize DB on app start
+init_db()
 
-# Page Config
-
+# Banner Image
 image_path = Path("assets/cover.jpeg")
 if image_path.exists():
-    cover_image = Image.open(image_path)
-    st.image(cover_image, use_container_width=True)
+    st.image(Image.open(image_path), use_container_width=True)
 else:
-    st.warning("⚠️ Cover image not found. Please check 'assets/cover.jpeg' path.")
+    st.warning("⚠️ Cover image not found. Place it in assets/cover.jpeg")
 
-    ## 🌱 **Sustainability**:
+# Intro
+st.markdown("## 🌍 Welcome to Local Food Waste Management App")
+st.write("Connecting providers with receivers to reduce food waste.")
 
-st.markdown("""
-                <div style="text-align: center;">
-
-            ## 🌎 Environmental Impact:
-              Food waste contributes significantly to 8-10% of global greenhouse gas emissions.<br>
-              Managing food waste locally helps reduce methane emissions and air pollution.<br>
-              It minimizes the carbon footprint from transporting excess food.<br>
-              Better utilization of food conserves water, soil, and energy used in production.<br>
-              Effective waste management protects ecosystems and supports sustainability.
-
-
-            ## 🏠 Community Benefits:
-             Strengthens local food systems by redistributing surplus food.<br>
-             Supports food banks and community organizations.<br>
-             Encourages collaboration among local businesses, nonprofits, and government agencies.<br>
-             Helps communities build resilience against food insecurity.<br>
-             Promotes a sense of unity and shared responsibility.
-
-
-            ## 💰 Economic Savings:
-             Reducing food waste saves money for households and businesses.<br>
-             Businesses lower disposal costs while gaining tax benefits from donations.<br>
-             Families save by cutting unnecessary purchases.<br>
-             Efficient use of food lowers overall operational costs for suppliers.<br>
-             Donations turn waste into valuable community resources.
-
-
-            ## 🤝 Social Impact:
-             Addresses food insecurity by ensuring surplus food reaches those in need.<br>
-             Promotes social equity by distributing resources fairly.<br>
-             Strengthens community connections through collaboration.<br>
-             Builds a culture of sharing and responsibility.<br>
-             Creates a positive community identity around sustainability.
-
-            </div>""", unsafe_allow_html=True)
-
-            # --- Dashboard Section ---
-st.subheader("Our Impact So Far")
-
+# Dashboard
+st.subheader("📊 Our Impact So Far")
 meals_claimed, partners, cities = fetch_dashboard_data()
 
-
-st.markdown(
-                f"""
-                <div style="background-color:#4CAF50;padding:30px;border-radius:10px;text-align:center;">
-                    <h2 style="color:white;">{meals_claimed:,}</h2>
-                    <p style="color:white;">Meals Claimed</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-st.write("") 
-
-            
-st.markdown(
-                f"""
-                <div style="background-color:#2196F3;padding:30px;border-radius:10px;text-align:center;">
-                    <h2 style="color:white;">{partners}</h2>
-                    <p style="color:white;">Partner Restaurants</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-st.write("")
-
-            
-st.markdown(
-                f"""
-                <div style="background-color:#9C27B0;padding:30px;border-radius:10px;text-align:center;">
-                    <h2 style="color:white;">{cities}</h2>
-                    <p style="color:white;">Cities Covered</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Meals Claimed", meals_claimed)
+with col2:
+    st.metric("Partner Restaurants", partners)
+with col3:
+    st.metric("Cities Covered", cities)
