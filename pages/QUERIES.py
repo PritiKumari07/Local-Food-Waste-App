@@ -1,8 +1,8 @@
 import streamlit as st
-import pandas as pd
-from db import get_engine
+from db import run_query
 
-st.title("📊 SQL Queries and Outputs")
+def main():
+    st.title("📊 SQL Queries and Outputs")
 
 queries = {
     "How many food providers and receivers are there in each city?": """
@@ -154,17 +154,19 @@ queries = {
 choice = st.selectbox("🔍 Select a query to run:", list(queries.keys()))
 
 if st.button("Run Query"):
-    engine = get_engine()
-
-    with engine.connect() as conn:
-        if choice == "What is the contact information of food providers in a specific city?":
-            city_name = st.text_input("Enter city name (default: Valentineside)", "Valentineside")
-            df = pd.read_sql(queries[choice], conn, params={"city_name": city_name})
-        else:
-            df = pd.read_sql(queries[choice], conn)
+    if choice == "What is the contact information of food providers in a specific city?":
+        city_name = st.text_input("Enter city name (default: Valentineside)", "Valentineside")
+        df = run_query(queries[choice], {"city_name": city_name})
+    else:
+        df = run_query(queries[choice])
 
     st.write("### Results")
     if df.empty:
         st.info("No results found.")
     else:
         st.dataframe(df)
+
+
+
+
+
