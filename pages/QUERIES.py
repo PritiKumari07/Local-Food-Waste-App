@@ -29,10 +29,10 @@ queries = {
         ORDER BY total_food_quantity DESC;
     """,
 
-    "What is the contact information of food providers in a specific city?": """
+      "What is the contact information of food providers in a specific city?": """
         SELECT name, contact, address, city
         FROM providers
-        WHERE city ILIKE :city_name;
+        WHERE city ILIKE %s;
     """,
 
     "Which receivers have claimed the most food?": """
