@@ -152,13 +152,12 @@ queries = {
 }
 
 choice = st.selectbox("🔍 Select a query to run:", list(queries.keys()))
-
-if st.button("Run Query"):
-    if choice == "What is the contact information of food providers in a specific city?":
-        city_name = st.text_input("Enter city name (e.g., 'New York'):")
-        df = run_query(queries[choice], {"city_name": city_name})
+if choice == "What is the contact information of food providers in a specific city?":
+    city_name = st.text_input("Enter city name (e.g., 'New York'):")
+    if city_name:  # only run when user provides a city
+        df = run_query(queries[choice], (f"%{city_name}%",))  # tuple param
     else:
-        df = run_query(queries[choice])
+        df = None
 
     st.write("### Results")
     if df.empty:
