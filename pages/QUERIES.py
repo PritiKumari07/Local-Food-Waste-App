@@ -1,8 +1,8 @@
 import streamlit as st
 from db import run_query
 
-def main():
-    st.title("📊 SQL Queries and Outputs")
+
+st.title("📊 SQL Queries and Outputs")
 
 queries = {
     "How many food providers and receivers are there in each city?": """

@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 from db import run_query
 
-def main():
-    st.title("📬 Contact Us")
+
+st.title("📬 Contact Us")
 
 st.sidebar.header("Filter Providers")
 city_filter = st.sidebar.text_input("City")
