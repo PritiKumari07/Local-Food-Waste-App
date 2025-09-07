@@ -6,16 +6,10 @@ import streamlit as st
 def get_connection():
     """
     Returns a connection to the Neon cloud database using SSL.
-    Uses Streamlit secrets if available.
     """
-    try:
-        # Use secrets if available (recommended for deployment)
-        return psycopg2.connect(st.secrets["postgres"]["url"])
-    except Exception:
-        # Fallback connection (hardcoded Neon string with SSL)
-        return psycopg2.connect(
-            "postgresql://neondb_owner:npg_N0TiljpPE5zx@ep-wandering-dream-a1lzhlqa-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-        )
+    return psycopg2.connect(
+        "postgresql://neondb_owner:npg_N0TiljpPE5zx@ep-wandering-dream-a1lzhlqa-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+    )
 
 def run_query(query, params=None):
     """
