@@ -5,7 +5,7 @@ import streamlit as st
 
 def get_connection():
     """
-    Returns a connection to Neon cloud database using SSL.
+    Returns a connection to the Neon cloud database using SSL.
     Uses Streamlit secrets if available.
     """
     try:
