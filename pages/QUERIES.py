@@ -155,17 +155,13 @@ choice = st.selectbox("🔍 Select a query to run:", list(queries.keys()))
 if choice == "What is the contact information of food providers in a specific city?":
     city_name = st.text_input("Enter city name (default = 'New Jessica'):", "New Jessica")
     if city_name:  
-        df = run_query(queries[choice], (f"%{city_name}%",)) 
+        df = run_query(queries[choice], (f"%{city_name}%",))
     else:
         df = None
+else:
+    df = run_query(queries[choice])
 
-    st.write("### Results")
-    if df.empty:
-        st.info("No results found.")
-    else:
-        st.dataframe(df)
-
-
-
-
-
+if df is not None and not df.empty:
+    st.dataframe(df)
+else:
+    st.info("No results found.")
