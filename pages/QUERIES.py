@@ -155,7 +155,7 @@ choice = st.selectbox("🔍 Select a query to run:", list(queries.keys()))
 
 if st.button("Run Query"):
     if choice == "What is the contact information of food providers in a specific city?":
-        city_name = st.text_input("Enter city name (default: Valentineside)", "Valentineside")
+        city_name = st.text_input("Enter city name (e.g., 'New York'):")
         df = run_query(queries[choice], {"city_name": city_name})
     else:
         df = run_query(queries[choice])
