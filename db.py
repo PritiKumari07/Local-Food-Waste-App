@@ -1,14 +1,10 @@
 import psycopg2
 from psycopg2.extras import DictCursor
 import pandas as pd
+import streamlit as st
 
 def get_connection():
-    return psycopg2.connect(
-        host="localhost",
-        user="postgres",
-        password="0719",
-        database="food_data"
-    )
+    return psycopg2.connect(st.secrets["postgres"]["url"])
 
 def run_query(query, params=None):
     conn = get_connection()
