@@ -75,7 +75,7 @@ food_types = run_query("""
     ORDER BY count_type DESC
     LIMIT 10
 """)
-st.subheader("Top 10 Food Types")
+st.subheader("Top Food Types")
 food_type_bar = alt.Chart(food_types).mark_bar(color='orange').encode(
     x=alt.X('food_type:N', sort='-y', title='Food Type'),
     y=alt.Y('count_type:Q', title='Count'),
