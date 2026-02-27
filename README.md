@@ -1,5 +1,5 @@
 
-<img width="1536" height="1024" alt="pic" src="https://github.com/user-attachments/assets/6bc36109-85be-461d-ac1e-ce45e5e595d5" />
+![Food-Waste-Management-jpg](https://github.com/user-attachments/assets/c51019c2-e617-4f6e-9b9e-fc69ae0b884e)
 
 
 # Food Waste Management System
